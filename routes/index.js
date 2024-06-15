@@ -7,12 +7,15 @@ const fs = require("fs");
 const bookCollection = require("../models/bookschema")
 const { checkPrice } = require("../utils/middlewares");
 const upload = require("../utils/multer");
+const { sendMail } = require("../utils/sendmail");
+
 // const upload = require("../utils/multer").single("poster");
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
   res.render('home');
 });
+
 
 
 router.get("/library", async function (req, res, next) {
@@ -26,7 +29,7 @@ router.get("/library", async function (req, res, next) {
 });
 
 router.get('/about', function(req, res, next) {
-  res.render('home');
+  res.render('about');
 });
 
 
@@ -155,6 +158,11 @@ router.get("/delete-book/:id", async function (req, res, next) {
       console.log(error);
       res.send(error);
   }
+});
+
+
+router.post("/send-mail", function (req, res, next) {
+  sendMail(req, res);
 });
 
 module.exports = router;
