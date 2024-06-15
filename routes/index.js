@@ -110,9 +110,33 @@ router.get("/update-book/:id", async function (req, res, next) {
   }
 });
 
-router.post("/update-book/:id", async function (req, res, next) {
+router.post("/update-book/:id",upload.single("poster"), async function (req, res, next) {
   try {
-      await bookCollection.findByIdAndUpdate(req.params.id, req.body);
+    const updatedBook = {...req.body};
+    // if(req.file){
+    //   updatedBook.poster = req.file.filename;
+    //   fs.unlinkSync(
+    //     path.join(
+          
+    //       __dirname, `../public/images/${req.body.oldimage}`
+    //     )
+    //   );  
+    // }
+    if (req.file) {
+      updatedBook.poster = req.file.filename;
+      const oldImagePath = path.join(__dirname, `../public/images/${req.body.oldimage}`);
+
+      // Check if old image exists before attempting to delete
+      if (fs.existsSync(oldImagePath)) {
+        fs.unlinkSync(oldImagePath);
+        console.log('Old image deleted:', oldImagePath);
+      } else {
+        console.warn('Old image file does not exist:', oldImagePath);
+      }
+    }
+
+
+      await bookCollection.findByIdAndUpdate(req.params.id,updatedBook);
       res.redirect(`/details/${req.params.id}`);
   } catch (error) {
       console.log(error);
